@@ -16,8 +16,6 @@ from geometry_msgs.msg import Twist
 from darknet_ros_msgs.msg import BoundingBoxes as BBs
 from darknet_ros_msgs.msg import BoundingBox as BB
 
-
-
 class OBJ :
 	def __init__(self, bb) :
 		self.Bbox = bb
@@ -46,7 +44,6 @@ def get_pubs():
 
 def process_BBs(BBS):
 	#print("\n---------------------------------------")
-	#print([BB.probability for BB in BBS.bounding_boxes])
 	global OBJs
 
 	OBJs = [ OBJ(bb) for bb in BBS.bounding_boxes if bb.probability>0.30 ]
