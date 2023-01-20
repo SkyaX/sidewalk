@@ -46,7 +46,6 @@ def get_pubs():
 
 def process_BBs(BBS):
 	#print("\n---------------------------------------")
-	#print([BB.probability for BB in BBS.bounding_boxes])
 	global OBJs
 
 	OBJs = [ OBJ(bb) for bb in BBS.bounding_boxes if bb.probability>0.30 ]
