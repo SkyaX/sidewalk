@@ -8,8 +8,6 @@ import cv2
 from sensor_msgs.msg import Image
 from std_msgs.msg import String
 
-depth = 0
-
 def mask_image(image, mask):
     new_Img = image.copy()
     for i, line in enumerate(image):
@@ -21,7 +19,8 @@ def callback(image):
     global depth
     global depth_image
     global croped_image
-    
+
+    depth = 0
     depth_image = image
 
     cv_dep_image = bridge.imgmsg_to_cv2(depth_image, desired_encoding='passthrough')
