@@ -35,7 +35,7 @@ def croped_image_pub():
     return pub
 
 def depth_image_list():
-    rospy.Subscriber('/camera/depth/image_raw', Image,  callback)
+    rospy.Subscriber('/camera/depth/image_raw', Image,  callback, queue_size = 1)
 
 if __name__ == '__main__':
     global bridge
@@ -46,7 +46,7 @@ if __name__ == '__main__':
     croped_image = []
     depth_image_list()
 
-    rospy.init_node('depth_cropped', anonymous = True)
+    rospy.init_node('depth_square', anonymous = True)
     
     while(len(croped_image) == 0):
         pass
@@ -54,14 +54,13 @@ if __name__ == '__main__':
     
     ci_pub = croped_image_pub()
     
-    rate = rospy.Rate(50)
+    rate = rospy.Rate(100)
 
     while not rospy.is_shutdown():
         croped_image_cp = croped_image.copy()    
-        for i, line in enumerate(croped_image_cp):
-            for j, pxl in enumerate(line):
-                if np.isnan(pxl):
-                    croped_image[i,j] = 0
+        
+        croped_image_cp[np.all(croped_image_cp == float('nan'), axis=-1)] = 0
+        
         for l in range(10):
             for i in range(20):
                 square = croped_image_cp[l*48:(l+1)*48:,i*32:(i+1)*32]

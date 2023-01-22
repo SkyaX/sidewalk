@@ -1,6 +1,11 @@
 <launch>
-	<include file = "$(find openni2_launch)/launch/openni2.launch"/>
-	<include file ="$(find darknet_ros)/launch/darknet_ros.launch"/>
+
+	<!-- includes RGB-D launch file -->
+	<include file = "$(find astra_camera)/launch/astra_pro.launch"/>
+
+	<!-- includes darknet launch file --> 
+	<include file ="$(find darknet_ros)/launch/darknet_ros.launch"/> 
+
 	<node name = "depth_square" pkg = "sidewalk" type = "depth_squares.py"/>
-	<node name = "yolo_centroids" pkg = "sidewalk" type = "yolo_test1.py"/>
+	<node name = "yolo_centroids" pkg = "sidewalk" type = "yolo_test2.py"/>
 </launch>

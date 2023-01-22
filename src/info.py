@@ -39,13 +39,12 @@ def speak(po):
 
 
 def getInfo(): 
-    rospy.init_node('getInfo',anonymous=True)
+    rospy.init_node('feedback',anonymous=True)
     pub = rospy.Subscriber('/turtle1/pose',Pose,call,queue_size=2)  #modifier avec nos parametres a nous
     spea=rospy.Subscriber('/turtle1/pose',Pose,speak) #modifier avec nos parametres a nous
 
 
-    while not rospy.is_shutdown():
-        rospy.sleep(0.1)
+    rospy.spin()
 
 
 if __name__=='__main__': 
