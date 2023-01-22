@@ -8,4 +8,6 @@
 
 	<node name = "depth_square" pkg = "sidewalk" type = "depth_squares.py"/>
 	<node name = "yolo_centroids" pkg = "sidewalk" type = "yolo_test2.py"/>
+	<!-- node name = "cluster_RGBD" pkg = "sidewalk" type = "clustering.py"/ -->
+	<!-- node name = "depth_slic" pkg = "sidewalk" type = "superpix.py"/ -->
 </launch>

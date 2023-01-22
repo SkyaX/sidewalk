@@ -39,7 +39,7 @@ def get_subs():
 	rospy.Subscriber('/darknet_ros/detection_image', Image,  process_yolo_img, queue_size=2)
 
 	ts = message_filters.ApproximateTimeSynchronizer([cam_img_sub, depth_img_sub], queue_size=10, slop=0.5)
-	ts.registerCallback(process_RGBD)
+	ts.registerCallback(cluster_RGBD)
 
 def get_pubs(): 
 	Traj_publisher = rospy.Publisher('trajectoire', Twist)
@@ -50,7 +50,7 @@ def process_BBs(BBS):
 
 	OBJs = [ OBJ(bb) for bb in BBS.bounding_boxes if bb.probability>0.30 ]
 
-def process_RGBD(cam_image, depth_image):
+def cluster_RGBD(cam_image, depth_image):
 	
 	global CAM_IMG 
 	global DEP_IMG
@@ -69,13 +69,26 @@ def process_RGBD(cam_image, depth_image):
 	cv_dep_rgb = cv2.normalize(cv_dep_image, None, alpha = 0, beta = 255, norm_type = cv2.NORM_MINMAX, dtype=cv2.CV_8U)
 	cv_dep_rgb = cv2.cvtColor(cv_dep_rgb, cv2.COLOR_GRAY2RGB, 0);
 
-	try :
+	Z = cv_cam_image.reshape((-1,3))
+	# convert to np.float32
+	Z = np.float32(Z)
+	# define criteria, number of clusters(K) and apply kmeans()
+	criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
+	K = 8
+	ret,label,center=cv2.kmeans(Z,K,None,criteria,10,cv2.KMEANS_RANDOM_CENTERS)
+	# Now convert back into uint8, and make original image
+	center = np.uint8(center)
+	res = center[label.flatten()]
+	res2 = res.reshape((cv_cam_image.shape))
+	cv2.imshow('res2',res2); cv2.waitKey(1)
+
+	"""try :
 		for object in OBJs :
 			coord = (object.Xc, object.Yc)
 			cv_cam_image = cv2.circle(cv_cam_image, coord, radius=10, color=(0, 255, 0), thickness=-1)
 			cv_dep_rgb = cv2.circle(cv_dep_rgb, coord, radius=10, color=(0, 255, 0), thickness=-1)
 
-	except : print("Waiting for the darknet topic")
+	except : print("Waiting for the darknet topic")"""
 
 	cv2.imshow("Cam", cv_cam_image); cv2.waitKey(1)
 	cv2.imshow("Depth", cv_dep_rgb); cv2.waitKey(1)
@@ -96,7 +109,7 @@ def process_dir(direction):
 	print(direction)
 
 if __name__ == '__main__':
-	rospy.init_node('yolo_centroids', anonymous = True)
+	rospy.init_node('RGB_clustering', anonymous = True)
 
 	global bridge
 	bridge = CvBridge()

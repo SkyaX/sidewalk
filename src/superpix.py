@@ -4,6 +4,8 @@ import rospy
 import numpy as np
 from cv_bridge import CvBridge
 import cv2
+from skimage.segmentation import slic
+from skimage.segmentation import mark_boundaries
 
 from sensor_msgs.msg import Image
 from std_msgs.msg import String
@@ -35,7 +37,7 @@ def croped_image_pub():
     return pub
 
 def depth_image_list():
-    rospy.Subscriber('/camera/depth/image_raw', Image,  callback, queue_size = 1)
+    rospy.Subscriber('/camera/depth/image_raw', Image,  callback)
 
 if __name__ == '__main__':
     global bridge
@@ -46,7 +48,7 @@ if __name__ == '__main__':
     croped_image = []
     depth_image_list()
 
-    rospy.init_node('depth_square', anonymous = True)
+    rospy.init_node('depth_slic', anonymous = True)
     
     while(len(croped_image) == 0):
         pass
@@ -54,27 +56,20 @@ if __name__ == '__main__':
     
     ci_pub = croped_image_pub()
     
-    rate = rospy.Rate(100)
+    rate = rospy.Rate(50)
 
     while not rospy.is_shutdown():
-        croped_image_cp = croped_image.copy()    
+        depth_image_cp = croped_image.copy()
+        depth_image_cp = cv2.normalize(depth_image_cp, None, alpha = 0, beta = 255, norm_type = cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+        segments_slic = slic(depth_image_cp, n_segments=200, compactness=0.1, enforce_connectivity = True)
         
-        croped_image_cp[np.all(croped_image_cp == float('nan'), axis=-1)] = 0
-        
-        for l in range(40):
-            for i in range(40):
-                square = croped_image_cp[l*12:(l+1)*12:,i*16:(i+1)*16]
-                if(len(square[square != 0])==0):
-                    d_mean = 0
-                else :
-                    d_mean = np.mean(square[square != 0])
-                for j, line  in enumerate(square):
-                    for k, pxl in enumerate(line):
-                        square[j,k] = d_mean
-        croped_image_cp = cv2.normalize(croped_image_cp, None, alpha = 0, beta = 255, norm_type = cv2.NORM_MINMAX, dtype=cv2.CV_8U)
-        image_message = bridge.cv2_to_imgmsg(croped_image_cp, encoding = 'passthrough')
+        for classe in np.unique(segments_slic):
+            depth_mean = np.mean(depth_image_cp[segments_slic == classe])
+            for pxl in depth_image_cp[segments_slic == classe]:
+                pxl = depth_mean
+        image_message = bridge.cv2_to_imgmsg(depth_image_cp, encoding = 'passthrough')
         ci_pub.publish(image_message)
         rate.sleep()
-        cv2.imshow("Depth", croped_image_cp)
+        cv2.imshow("SLIC", mark_boundaries(depth_image_cp, segments_slic))
         cv2.waitKey(1)
 
