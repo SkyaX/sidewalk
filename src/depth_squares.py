@@ -75,6 +75,5 @@ if __name__ == '__main__':
         image_message = bridge.cv2_to_imgmsg(croped_image_cp, encoding = 'passthrough')
         ci_pub.publish(image_message)
         rate.sleep()
-        cv2.imshow("Depth", croped_image_cp)
-        cv2.waitKey(1)
+        cv2.imshow("Depth_squares", croped_image_cp); cv2.waitKey(1)
 

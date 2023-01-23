@@ -1,80 +1,59 @@
 #!/usr/bin/env python3
 
 import rospy 
-
-#from sidewalk.msg import Trajectoire 
-
 from geometry_msgs.msg import Twist
-
-# from turtlesim.msg import Pose # a remplacer avec les infos de trajectory 
-
+import time
 import sys
 import pyttsx3
 
-# voice = pyttsx3.init ()
-
-# """RATE """
-# rate = voice.getProperty('rate')
-# voice.setProperty('rate',180)
-
-# """VOLUME"""
-# volume = voice.getProperty('volume')
-# voice.setProperty('volume',0.5)
-
-# """VOICE = woman """
-# voices = voice.getProperty('voices') 
-# voice.setProperty('voice', voices[0].id)
-
-
-
-def call(po): 
-    #rospy.loginfo("X = %f : Y = %f : Z=%f\n", po.linear.x, po.linear.y, po.linear.z)
-    print(po.linear.x)
+def textTospeach(text): #allows to convert string to audio feedback
+    engine = pyttsx3.init ()
+    engine.say(text)
+    engine.runAndWait()
+    del engine
 
 
 def speak(po): 
-    #remplacer les valeurs aves le xmin,xmax,ymin et ymax de notre video 
-    #permet de guider la personne
 
-    print(po.linear.x)
+    go_left = "please move your body to the left until you hear go forward"
+    go_right = "please move your body to the right until you hear go forward"
+    go_forward = "you can walk in the direction you are in"
+    stop="STOP"
 
-    if po.linear.x not in range(224,416) or po.z<2: 
-        if po.linear.z<2 : 
-            pyttsx3.speak("STOP")
-        if po.linear.x<224: 
-            pyttsx3.speak("please move your body to the left until you hear go forward")
-        elif po.linear.x>416 :
-            pyttsx3.speak("please move your body right until you hear go forward")
-    else : 
-        pyttsx3.speak("you can walk in the direction you are in")
+    print("z : %f \n", po.linear.z)
+    print("x : %f \n", po.linear.x)
+    global timestamp 
+    print(time.time()- timestamp)
 
-    # if (po.x < 1.35) : 
-    #     if (po.y<4.38) :
-    #         pyttsx3.speak("go right and up")
-    #     elif (po.y > 7.19): 
-    #         pyttsx3.speak("go right and down")
-    #     else : 
-    #         pyttsx3.speak('go right')
-    # elif (po.x > 9.63) : 
-    #     if (po.y<4.38) : 
-    #         pyttsx3.speak("go left and up")
-    #     elif (po.y > 7.19) : cv2.imshow("Cam", cv_cam_image); cv2.waitKey(1)
-	# cv2
-    #         pyttsx3.speak("go left and down")
-    #     else : 
-    #         pyttsx3.speak("go left")
-    # elif (po.y > 7.19): 
-    #     pyttsx3.speak('go down')
-    # elif (po.y < 4.38): 
-    #     pyttsx3.speak("go up")
+    tps_pause = dict_pause[prev_msg]
 
-    #voice.runAndWait()
+
+    if po.linear.x in range(190,420)  and (time.time()-timestamp) > tps_pause :
+        if po.linear.z<1000:
+            timestamp = time.time()
+            textTospeach(stop)
+            prev_msg = 'stop'
+        else: 
+            timestamp = time.time()
+            textTospeach(go_forward)
+            prev_msg = 'forward'
+
+    if po.linear.x not in range(190,420)  and (time.time()-timestamp) > tps_pause :
+        if po.linear.x<190:
+            timestamp = time.time()
+            textTospeach(go_left)
+            prev_msg = 'rotate'
+        elif po.linear.x>420 :
+            timestamp = time.time()
+            textTospeach(go_right)
+            prev_msg = 'rotate'
 
 
 def getInfo(): 
     rospy.init_node('getInfo',anonymous=True)
-    #rospy.Subscriber('/trajectoire',Twist,call,queue_size=2)  #modifier avec nos parametres a nous
-    rospy.Subscriber('/trajectoire',Twist,speak) #modifier avec nos parametres a nous
+    global timestamp 
+    timestamp = 0
+    rospy.Subscriber('/trajectoire',Twist,speak,queue_size=2) #modifier avec nos parametres a nous
 
 
     while not rospy.is_shutdown():
@@ -82,6 +61,19 @@ def getInfo():
 
 
 if __name__=='__main__': 
+
+    global dict_pause
+    global prev_msg
+
+    prev_msg = 'stop'
+
+    dict_pause = {
+        'stop' : 1,
+        'forward' : 1,
+        'hard' : 1.5,
+        'rotate' : 3
+    }
+
     try: 
         getInfo()
     except rospy.ROSInterruptException: 
