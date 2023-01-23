@@ -4,79 +4,99 @@ import rospy
 from geometry_msgs.msg import Twist
 import time
 import sys
-import pyttsx3
+
+import speake3
+#import pyttsx3
 
 def textTospeach(text): #allows to convert string to audio feedback
-    engine = pyttsx3.init ()
-    engine.say(text)
-    engine.runAndWait()
-    del engine
+     #pyttsx3.init ()
+    global engine 
 
+    engine.say(text)
+    engine.talkback()
+    #engine.runAndWait()
+    #del engine
 
 def speak(po): 
+    global prev_msg
 
-    go_left = "please move your body to the left until you hear go forward"
-    go_right = "please move your body to the right until you hear go forward"
-    go_forward = "you can walk in the direction you are in"
-    stop="STOP"
+    X = po.linear.x
+    Y = po.linear.y
+    Z = po.linear.z
 
-    print("z : %f \n", po.linear.z)
-    print("x : %f \n", po.linear.x)
+    print("z : %f \n", Z)
+    print("x : %f \n", X)
     global timestamp 
     print(time.time()- timestamp)
 
     tps_pause = dict_pause[prev_msg]
 
+    if (time.time()-timestamp) > tps_pause :
 
-    if po.linear.x in range(190,420)  and (time.time()-timestamp) > tps_pause :
-        if po.linear.z<1000:
-            timestamp = time.time()
-            textTospeach(stop)
-            prev_msg = 'stop'
-        else: 
-            timestamp = time.time()
-            textTospeach(go_forward)
-            prev_msg = 'forward'
+        if X in range(240,440): 
+            if Z<1000:
+                timestamp = time.time()
+                textTospeach("stop")
+                prev_msg = 'stop'
+            else: 
+                timestamp = time.time()
+                textTospeach("go forward")
+                prev_msg = 'forward'
 
-    if po.linear.x not in range(190,420)  and (time.time()-timestamp) > tps_pause :
-        if po.linear.x<190:
-            timestamp = time.time()
-            textTospeach(go_left)
-            prev_msg = 'rotate'
-        elif po.linear.x>420 :
-            timestamp = time.time()
-            textTospeach(go_right)
-            prev_msg = 'rotate'
+        elif X in range(0,239) :
+            if X<=96 :
+                timestamp = time.time()
+                textTospeach("rotate hard left")
+                prev_msg = 'hard'
+            else :
+                timestamp = time.time()
+                textTospeach("rotate left")
+                prev_msg = 'rotate'
+        else:
+            if X >=594 :
+                timestamp = time.time()
+                textTospeach("rotate hard right")
+                prev_msg = 'hard'
+            else:
+                timestamp = time.time()
+                textTospeach("rotate right")
+                prev_msg = 'rotate'
+    
 
 
 def getInfo(): 
     rospy.init_node('getInfo',anonymous=True)
     global timestamp 
     timestamp = 0
-    rospy.Subscriber('/trajectoire',Twist,speak,queue_size=2) #modifier avec nos parametres a nous
-
+    rospy.Subscriber('/trajectoire',Twist,speak,queue_size=2)
 
     while not rospy.is_shutdown():
         rospy.sleep(0.5)
-
 
 if __name__=='__main__': 
 
     global dict_pause
     global prev_msg
+    global engine
 
-    prev_msg = 'stop'
+    engine = speake3.Speake()
+    engine.set('voice', 'en')
+    engine.set('speed', '107')
+    engine.set('pitch', '99')
+
+    engine.say("please wait")
+    prev_msg = 'wait'
+    
 
     dict_pause = {
         'stop' : 1,
         'forward' : 1,
-        'hard' : 1.5,
-        'rotate' : 3
+        'hard':1.5, 
+        'rotate' : 2, 
+        'wait':5,
     }
 
     try: 
         getInfo()
     except rospy.ROSInterruptException: 
         pass
-
-

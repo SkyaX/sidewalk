@@ -32,7 +32,6 @@ def get_subs():
     rospy.Subscriber('/depth_squares', Image, process_depth_squares)
     cam_img_sub = rospy.Subscriber('/camera/color/image_raw', Image, process_cam_image)
 
-
 def process_cam_image(img) :
     global cv_cam_image
     cv_cam_image = bridge.imgmsg_to_cv2(img, desired_encoding='passthrough')
@@ -51,6 +50,8 @@ def process_dir(direction):
     global i_le
     global n_div
     global pxl_div
+    global depth_sq_img
+
 
     free_sp = np.argwhere(direction == 0)[:,0]
     if (len(free_sp) == 0): # No space to move
@@ -75,9 +76,12 @@ def process_dir(direction):
         i_le = (free_sp[i_longest_streak] + longest_streak/2)*pxl_div
         angle = (i_le - 4.5) * 10
     dir_msg = Twist()
-    dir_msg.linear.x = 0
-    dir_msg.linear.y = i_le
-    dir_msg.linear.z = 0
+    dir_msg.linear.x = i_le
+    dir_msg.linear.y = 480//2
+    try : 
+        cv2.imshow("Test", depth_sq_img); cv2.waitKey(1)
+        dir_msg.linear.z = depth_sq_img[int(480//2),int(i_le)]
+    except : print("Pas d'image")
     dir_msg.angular.z = 0
     dir_msg.angular.x = 0
     dir_msg.angular.y = 0
@@ -86,25 +90,29 @@ def process_dir(direction):
 def score_computing() :
 
     global cv_cam_image
+    global depth_sq_img
 
     score = np.zeros(nb_div)
 
     for object in OBJs:
-        d_cent = depth_sq_img[object.Yc,object.Xc]
+        try :
+            d_cent = depth_sq_img[object.Yc,object.Xc]
 
-        if (d_cent < 8000):
-            for i in range(len(score)):
-                thb = i*(pxl_div)
-                thh = (i+1)*pxl_div
-                score_io = pxl_div
-                if (object.xmin > thb):
-                    score_io -= (object.xmin - thb)
-                if (object.xmax < thh):
-                    score_io -= (thh - object.xmax)
-                if (object.xmin > thh or thb > object.xmax):
-                    score_io = 0
-                score[i] += score_io
-    Traj_publisher.publish(process_dir(score))
+            if (d_cent < 8000):
+                for i in range(len(score)):
+                    thb = i*(pxl_div)
+                    thh = (i+1)*pxl_div
+                    score_io = pxl_div
+                    if (object.xmin > thb):
+                        score_io -= (object.xmin - thb)
+                    if (object.xmax < thh):
+                        score_io -= (thh - object.xmax)
+                    if (object.xmin > thh or thb > object.xmax):
+                        score_io = 0
+                    score[i] += score_io
+        except : print("Pas d'objet")
+    pose_msg = process_dir(score)
+    Traj_publisher.publish(pose_msg)
     cv_im = cv_cam_image.copy()
     try :
         cv_im = cv2.circle(cv_im, (int(i_le), int(210)), radius=10, color=(0, 255, 0), thickness=-1)
@@ -136,8 +144,7 @@ if __name__ == '__main__':
 
     get_subs()
     
-    Traj_publisher = rospy.Publisher('trajectoire', Twist)
-    #velocity_publisher = rospy.Publisher('/cmd_vel', Twist, queue_size = 1)
+    Traj_publisher = rospy.Publisher('/trajectoire', Twist, queue_size=2)
 
     rate = rospy.Rate(10)
     

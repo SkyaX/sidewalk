@@ -71,7 +71,7 @@ if __name__ == '__main__':
                 for j, line  in enumerate(square):
                     for k, pxl in enumerate(line):
                         square[j,k] = d_mean
-        croped_image_cp = cv2.normalize(croped_image_cp, None, alpha = 0, beta = 255, norm_type = cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+        # croped_image_cp = cv2.normalize(croped_image_cp, None, alpha = 0, beta = 255, norm_type = cv2.NORM_MINMAX, dtype=cv2.CV_8U)
         image_message = bridge.cv2_to_imgmsg(croped_image_cp, encoding = 'passthrough')
         ci_pub.publish(image_message)
         rate.sleep()
