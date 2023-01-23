@@ -82,7 +82,7 @@ if __name__=='__main__':
     engine = speake3.Speake()
     engine.set('voice', 'en')
     engine.set('speed', '107')
-    engine.set('pitch', '99')
+    #engine.set('pitch', '99')
 
     engine.say("please wait")
     prev_msg = 'wait'
