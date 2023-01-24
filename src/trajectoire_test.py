@@ -60,8 +60,11 @@ def process_RGBD(cam_image, depth_image):
 	cv_cam_image = bridge.imgmsg_to_cv2(CAM_IMG, desired_encoding='passthrough')
 	cv_dep_image = bridge.imgmsg_to_cv2(DEP_IMG, desired_encoding='passthrough')
 
+	kernel = np.ones((7,7), np.uint8)
+	dep_dilated = cv2.dilate(cv_dep_image, kernel)
+
 	try :
-		yolo_means = cv_dep_image.copy()
+		yolo_means = dep_dilated.copy()
 		for object in OBJs :
 			object_img = yolo_means[object.ymin:object.ymax,object.xmin:object.xmax]
 			object.median_depth = np.median(np.reshape(object_img, (1,-1)))
@@ -73,7 +76,7 @@ def process_RGBD(cam_image, depth_image):
 
 	except : print("Err : try yolo_means")
 
-	cv_dep_norm = cv2.normalize(cv_dep_image, None, alpha = 0, beta = 255, norm_type = cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+	cv_dep_norm = cv2.normalize(dep_dilated, None, alpha = 0, beta = 255, norm_type = cv2.NORM_MINMAX, dtype=cv2.CV_8U)
 	cv_dep_rgb = cv2.cvtColor(cv_dep_norm, cv2.COLOR_GRAY2RGB, 0);
 
 	yolo_means_norm = cv2.normalize(yolo_means, None, alpha = 0, beta = 255, norm_type = cv2.NORM_MINMAX, dtype=cv2.CV_8U)
@@ -92,10 +95,11 @@ def process_RGBD(cam_image, depth_image):
 
 	except : print("Err : try green circles")
 
-	#cv2.imshow("Cam", cv_cam_image); cv2.waitKey(1)
-	cv2.imshow("Depth", cv_dep_rgb); cv2.waitKey(1)
-	cv2.imshow("Original depth", cv_dep_image); cv2.waitKey(1)
-	#cv2.imshow("New depth", yolo_means_rgb); cv2.waitKey(1)
+	#cv2.imshow("Cam", cv_cam_image); cv2.moveWindow("Cam", 0, 0); cv2.waitKey(1)
+	#cv2.imshow("Depth", cv_dep_rgb); cv2.moveWindow("Depth", 640, 0); cv2.waitKey(1)
+	cv2.imshow("Dilated_depth", dep_dilated); cv2.moveWindow("Dilated_depth", 640, 0); cv2.waitKey(1)
+	cv2.imshow("Original_depth", cv_dep_image); cv2.moveWindow("Original_depth", 1280, 0); cv2.waitKey(1)
+	cv2.imshow("New_depth", yolo_means_rgb); cv2.moveWindow("New_depth", 0, 480); cv2.waitKey(1)
 
 def process_yolo_img(yolo_image):
 	""" 
@@ -105,9 +109,12 @@ def process_yolo_img(yolo_image):
 	YOLO_IMG = yolo_image
 	cv_yolo_image = bridge.imgmsg_to_cv2(YOLO_IMG, desired_encoding='passthrough')
 	
-	cv2.imshow("Yolo", cv_yolo_image); cv2.waitKey(1)
+	cv2.imshow("Yolo", cv_yolo_image); cv2.moveWindow("Yolo", 640, 480); cv2.waitKey(1)
 
-def process_dir(direction : OBJ):
+def process_dir(direction : Twist):
+	""" 
+		Processes the Trajectory point given as a Twist
+	"""
 	try :
 		Pose_obj = Twist()
 		Pose_obj.linear.x = direction.Xc
