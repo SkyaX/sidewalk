@@ -143,11 +143,11 @@ def process_RGBD(cam_image, depth_image):
 		process_dir([Xc_moy,Yc_moy])
 	except : print("Err : spliting")
 
-	#cv2.imshow("Cam", cv_cam_image); cv2.moveWindow("Cam", 0, 0); cv2.waitKey(1)
-	#cv2.imshow("Depth", cv_dep_rgb); cv2.moveWindow("Depth", 640, 0); cv2.waitKey(1)
-	#cv2.imshow("Dilated_depth", dep_dilated); cv2.waitKey(1)
-	#cv2.imshow("Original_depth", cv_dep_image); cv2.waitKey(1)
-	#cv2.imshow("New_depth", yolo_means_rgb); cv2.waitKey(1)
+	cv2.imshow("Cam", cv_cam_image); cv2.moveWindow("Cam", 0, 0); cv2.waitKey(1)
+	cv2.imshow("Depth", cv_dep_rgb); cv2.moveWindow("Depth", 640, 0); cv2.waitKey(1)
+	cv2.imshow("Dilated_depth", dep_dilated); cv2.waitKey(1)
+	cv2.imshow("Original_depth", cv_dep_image); cv2.waitKey(1)
+	cv2.imshow("New_depth", yolo_means_rgb); cv2.waitKey(1)
 	cv2.imshow("Region_depth", region); cv2.waitKey(1)
 
 def process_yolo_img(yolo_image):
