@@ -5,6 +5,7 @@ import numpy as np
 from cv_bridge import CvBridge
 import cv2
 import matplotlib.pyplot as plt
+import time
 
 from sensor_msgs.msg import Image
 from std_msgs.msg import String
@@ -54,24 +55,28 @@ def process_RGBD(cam_image, depth_image):
 		Processes the RGB-D images from astra_pro.launch
 	"""
 	global cv_dep_image
+	global counting_points
+	global pointsX
+	global pointsY
+	global Xc_moy
+	global Yc_moy
 
 	DEP_IMG = depth_image
 	CAM_IMG = cam_image
 	cv_cam_image = bridge.imgmsg_to_cv2(CAM_IMG, desired_encoding='passthrough')
 	cv_dep_image = bridge.imgmsg_to_cv2(DEP_IMG, desired_encoding='passthrough')
 
-	kernel = np.ones((7,7), np.uint8)
+	kernel = np.ones((15,15), np.uint8)
 	dep_dilated = cv2.dilate(cv_dep_image, kernel)
 
-	try :
+	try : # goes throught the detected objects in proximity order and fills their bbox area with their median depth value
 		yolo_means = dep_dilated.copy()
 		for object in OBJs :
 			object_img = yolo_means[object.ymin:object.ymax,object.xmin:object.xmax]
 			object.median_depth = np.median(np.reshape(object_img, (1,-1)))
-			# random_pub.publish(f"{object.obj_type} : distance = {median_depth}\n")
 
 		for object in np.sort(OBJs)[::-1] : 
-			print(f"{object.obj_type} : {object.median_depth}")
+			#print(f"{object.obj_type} : {object.median_depth}")
 			yolo_means[object.ymin:object.ymax,object.xmin:object.xmax] = object.median_depth
 
 	except : print("Err : try yolo_means")
@@ -81,11 +86,6 @@ def process_RGBD(cam_image, depth_image):
 
 	yolo_means_norm = cv2.normalize(yolo_means, None, alpha = 0, beta = 255, norm_type = cv2.NORM_MINMAX, dtype=cv2.CV_8U)
 	yolo_means_rgb = cv2.cvtColor(yolo_means_norm, cv2.COLOR_GRAY2RGB, 0);
-	
-	"""MAX = np.max(np.reshape(cv_dep_image, (1,-1)))
-	HIST = cv2.calcHist(cv_dep_image,[0],None,[MAX+1],[0,MAX])
-	plt.plot(HIST); plt.show() # plt.savefig("hist.png")
-	plt.imshow(cv_dep_image); plt.show()"""
 
 	try : # goes throught the detected objects and displays their centroid
 		for object in OBJs :
@@ -95,11 +95,60 @@ def process_RGBD(cam_image, depth_image):
 
 	except : print("Err : try green circles")
 
+	highest_median_half = 0
+	try : 
+		half = np.hsplit(yolo_means_norm, 2)
+		medians = [np.mean(col) for col in half]
+		highest_median_half = np.argmax(medians)
+		if highest_median_half == 0 : print('Left')
+		else : print('Right')
+		half_yolo = yolo_means_rgb.copy()
+		half_yolo = half_yolo[:,highest_median_half*320:320*(highest_median_half+1)]
+		cv2.imshow("Half_depth", half_yolo); cv2.waitKey(1)
+	except Exception as err : print(err)
+
+	try :
+		# Split the image into columns
+		columns = np.hsplit(half_yolo, 20)
+		#list(filter(lambda x : x != 'something@something.com', emails))
+		# Calculate the median pixel value for each column
+		medians = [np.mean(col) for col in columns]
+		# Find the column with the highest median pixel value
+		highest_median_col = np.argmax(medians)
+
+		# Get the region of the image corresponding to the column with the highest median pixel value
+		region = yolo_means_rgb.copy()
+		xmin = highest_median_half*320 + highest_median_col*half_yolo.shape[1]//20
+		xmax = highest_median_half*320 + half_yolo.shape[1]//20*(highest_median_col+1)
+		ymin = 0
+		ymax = 480
+		Xc = int(((xmax-xmin)/2)+xmin) # Center of the object's bounding box
+		Yc = int(((ymax-ymin)/2)+ymin)
+		region[:, xmin:xmax] = (0,255,0)
+
+		counting_points += 1 
+		pointsX.append(Xc)
+		pointsY.append(Yc)
+
+		if counting_points > 30 :
+			Xc_moy = int(np.mean(pointsX))
+			Yc_moy = int(np.mean(pointsY))
+
+			pointsX = []
+			pointsY = []
+			counting_points = 0
+
+		region = cv2.circle(region, (Xc_moy,Yc_moy), radius=10, color=(255, 0, 0), thickness=-1)
+
+		process_dir([Xc_moy,Yc_moy])
+	except : print("Err : spliting")
+
 	#cv2.imshow("Cam", cv_cam_image); cv2.moveWindow("Cam", 0, 0); cv2.waitKey(1)
 	#cv2.imshow("Depth", cv_dep_rgb); cv2.moveWindow("Depth", 640, 0); cv2.waitKey(1)
-	cv2.imshow("Dilated_depth", dep_dilated); cv2.moveWindow("Dilated_depth", 640, 0); cv2.waitKey(1)
-	cv2.imshow("Original_depth", cv_dep_image); cv2.moveWindow("Original_depth", 1280, 0); cv2.waitKey(1)
-	cv2.imshow("New_depth", yolo_means_rgb); cv2.moveWindow("New_depth", 0, 480); cv2.waitKey(1)
+	#cv2.imshow("Dilated_depth", dep_dilated); cv2.waitKey(1)
+	#cv2.imshow("Original_depth", cv_dep_image); cv2.waitKey(1)
+	#cv2.imshow("New_depth", yolo_means_rgb); cv2.waitKey(1)
+	cv2.imshow("Region_depth", region); cv2.waitKey(1)
 
 def process_yolo_img(yolo_image):
 	""" 
@@ -109,20 +158,20 @@ def process_yolo_img(yolo_image):
 	YOLO_IMG = yolo_image
 	cv_yolo_image = bridge.imgmsg_to_cv2(YOLO_IMG, desired_encoding='passthrough')
 	
-	cv2.imshow("Yolo", cv_yolo_image); cv2.moveWindow("Yolo", 640, 480); cv2.waitKey(1)
+	cv2.imshow("Yolo", cv_yolo_image); cv2.waitKey(1)
 
-def process_dir(direction : Twist):
+def process_dir(direction):
 	""" 
 		Processes the Trajectory point given as a Twist
 	"""
 	try :
 		Pose_obj = Twist()
-		Pose_obj.linear.x = direction.Xc
-		Pose_obj.linear.y = direction.Yc
-		Pose_obj.linear.z = cv_dep_image[direction.Yc,direction.Xc]
+		Pose_obj.linear.x = direction[0]
+		Pose_obj.linear.y = direction[1]
+		Pose_obj.linear.z = cv_dep_image[direction[1],direction[0]]
 
 		Traj_publisher.publish(Pose_obj)
-	except : print('No object')
+	except : print('No object', direction)
 
 if __name__ == '__main__':
 	rospy.init_node('yolo_centroids', anonymous = True)
@@ -135,10 +184,23 @@ if __name__ == '__main__':
 	global cv_dep_image
 	global OBJs
 
+	global counting_points
+	global pointsX
+	global pointsY
+	global Xc_moy
+	global Yc_moy
+
+	Xc_moy,Yc_moy = 320,240
+	pointsX = []
+	pointsY = []
+	counting_points = 0
+
 	bridge = CvBridge()
 
 	Traj_publisher = rospy.Publisher('trajectoire', Twist, queue_size = 1)
 	random_pub = rospy.Publisher('sidewalk_random', String, queue_size = 1)
 	get_subs()
 	
-	rospy.spin()
+	rate = rospy.Rate(10)
+	while not rospy.is_shutdown():
+		rate.sleep()

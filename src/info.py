@@ -9,13 +9,9 @@ import speake3
 #import pyttsx3
 
 def textTospeach(text): #allows to convert string to audio feedback
-     #pyttsx3.init ()
     global engine 
-
     engine.say(text)
     engine.talkback()
-    #engine.runAndWait()
-    #del engine
 
 def speak(po): 
     global prev_msg
@@ -32,7 +28,6 @@ def speak(po):
     tps_pause = dict_pause[prev_msg]
 
     if (time.time()-timestamp) > tps_pause :
-
         if X in range(240,440): 
             if Z<1000:
                 timestamp = time.time()
@@ -46,23 +41,21 @@ def speak(po):
         elif X in range(0,239) :
             if X<=96 :
                 timestamp = time.time()
-                textTospeach("rotate hard left")
+                textTospeach("slightly rotate left")
                 prev_msg = 'hard'
             else :
                 timestamp = time.time()
-                textTospeach("rotate left")
+                textTospeach("forward light left")
                 prev_msg = 'rotate'
         else:
             if X >=594 :
                 timestamp = time.time()
-                textTospeach("rotate hard right")
+                textTospeach("slightly rotate right")
                 prev_msg = 'hard'
             else:
                 timestamp = time.time()
-                textTospeach("rotate right")
+                textTospeach("forward light right")
                 prev_msg = 'rotate'
-    
-
 
 def getInfo(): 
     rospy.init_node('getInfo',anonymous=True)
@@ -86,7 +79,6 @@ if __name__=='__main__':
 
     engine.say("please wait")
     prev_msg = 'wait'
-    
 
     dict_pause = {
         'stop' : 1,
