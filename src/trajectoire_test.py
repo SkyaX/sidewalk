@@ -112,7 +112,7 @@ def process_RGBD(cam_image, depth_image):
 
 		cv2.imshow("Half_depth", half_yolo); cv2.waitKey(1)
 
-	except Exception as err : print(err)
+	except Exception as err : print(err) # exception si pas d'image
 
 	try :
 		# Split the image into columns
@@ -147,7 +147,7 @@ def process_RGBD(cam_image, depth_image):
 		region = cv2.circle(region, (Xc_moy,Yc_moy), radius=10, color=(255, 0, 0), thickness=-1)
 
 		process_dir([Xc_moy,Yc_moy])
-		
+
 	except : print("Err : spliting")
 
 	#cv2.imshow("Cam", cv_cam_image); cv2.waitKey(1)
