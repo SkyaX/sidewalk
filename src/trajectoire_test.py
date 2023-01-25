@@ -181,7 +181,7 @@ def process_dir(direction):
 	except : print('No object', direction)
 
 if __name__ == '__main__':
-	rospy.init_node('yolo_centroids', anonymous = True)
+	rospy.init_node('SideWalker', anonymous = True)
 
 	global bridge
 	global YOLO_IMG
