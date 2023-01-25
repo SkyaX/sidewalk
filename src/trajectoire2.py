@@ -97,11 +97,8 @@ def process_RGBD(cam_image, depth_image):
 
 	except : print("Err : try green circles")
 
-	# --------------------------------------------------------------------------------- Calcul trajectoire
-
 	highest_median_half = 0
 	try : 
-		# Splits image in half and processes mean depth
 		half = np.hsplit(yolo_means_norm, 2)
 		medians = [np.mean(col) for col in half]
 		highest_median_half = np.argmax(medians)
@@ -109,14 +106,13 @@ def process_RGBD(cam_image, depth_image):
 		else : print('Right')
 		half_yolo = yolo_means_rgb.copy()
 		half_yolo = half_yolo[:,highest_median_half*320:320*(highest_median_half+1)]
-
 		cv2.imshow("Half_depth", half_yolo); cv2.waitKey(1)
-
 	except Exception as err : print(err)
 
 	try :
 		# Split the image into columns
 		columns = np.hsplit(half_yolo, 20)
+		#list(filter(lambda x : x != 'something@something.com', emails))
 		# Calculate the median pixel value for each column
 		medians = [np.mean(col) for col in columns]
 		# Find the column with the highest median pixel value
@@ -147,7 +143,6 @@ def process_RGBD(cam_image, depth_image):
 		region = cv2.circle(region, (Xc_moy,Yc_moy), radius=10, color=(255, 0, 0), thickness=-1)
 
 		process_dir([Xc_moy,Yc_moy])
-		
 	except : print("Err : spliting")
 
 	#cv2.imshow("Cam", cv_cam_image); cv2.waitKey(1)
