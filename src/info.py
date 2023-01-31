@@ -2,8 +2,12 @@
 
 import rospy 
 from geometry_msgs.msg import Twist
+from sensor_msgs.msg import Image
 import time
 import sys
+
+from cv_bridge import CvBridge
+import cv2
 
 import speake3
 #import pyttsx3
@@ -30,38 +34,42 @@ def speak(po):
     if (time.time()-timestamp) > tps_pause :
         if X in range(240,440): 
             if Z<1000:
-                timestamp = time.time()
-                textTospeach("stop")
+                if prev_msg != 'stop' : textTospeach("stop, slowly go backward")
+                else : textTospeach("keep slowly going backward")
                 prev_msg = 'stop'
             else: 
-                timestamp = time.time()
                 textTospeach("go forward")
                 prev_msg = 'forward'
 
         elif X in range(0,239) :
             if X<=96 :
-                timestamp = time.time()
-                textTospeach("slightly rotate left")
-                prev_msg = 'hard'
-            else :
-                timestamp = time.time()
-                textTospeach("forward light left")
+                if prev_msg != 'rotate' : textTospeach("stop, slightly rotate left")
+                else : textTospeach("keep slightly rotating left")
                 prev_msg = 'rotate'
+            else :
+                textTospeach("slow forward light left")
+                prev_msg = 'light'
         else:
             if X >=594 :
-                timestamp = time.time()
-                textTospeach("slightly rotate right")
-                prev_msg = 'hard'
-            else:
-                timestamp = time.time()
-                textTospeach("forward light right")
+                if prev_msg != 'rotate' : textTospeach("stop, slightly rotate right")
+                else : textTospeach("keep slightly rotating right")
                 prev_msg = 'rotate'
+            else:
+                textTospeach("slow forward light right")
+                prev_msg = 'light'
+        timestamp = time.time()
+
+def process_img_traj(img) :
+    region = bridge.imgmsg_to_cv2(img)
+
+    cv2.imshow("Region_info", region); cv2.waitKey(1)
 
 def getInfo(): 
     rospy.init_node('getInfo',anonymous=True)
     global timestamp 
     timestamp = 0
-    rospy.Subscriber('/trajectoire',Twist,speak,queue_size=2)
+    rospy.Subscriber('/trajectoire',Twist,speak,queue_size=5)
+    rospy.Subscriber('/img_trajectoire', Image, process_img_traj)
 
     while not rospy.is_shutdown():
         rospy.sleep(0.5)
@@ -71,6 +79,9 @@ if __name__=='__main__':
     global dict_pause
     global prev_msg
     global engine
+    global bridge 
+
+    bridge = CvBridge()
 
     engine = speake3.Speake()
     engine.set('voice', 'en')
@@ -81,10 +92,10 @@ if __name__=='__main__':
     prev_msg = 'wait'
 
     dict_pause = {
-        'stop' : 1,
-        'forward' : 1,
-        'hard':1.5, 
-        'rotate' : 2, 
+        'stop' : 0.5,
+        'forward' : 0.5,
+        'light':1, 
+        'rotate' : 1.5, 
         'wait':5,
     }
 
