@@ -4,7 +4,7 @@
 [![forthebadge](https://forthebadge.com/images/badges/60-percent-of-the-time-works-every-time.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
 
-A [**ROS**](http://wiki.ros.org/noetic) package developed for a course regarding Cybathlon contest's sidewalk challenge.
+A [**ROS**](http://wiki.ros.org/noetic) package, relying on the RGB-D camera technology, developed for a course regarding Cybathlon contest's sidewalk challenge.
 
 Tested and reviewed under **ROS-noetic** and **Ubuntu 20.04**, this package, unaltered, depends on the use of an [**Astra Pro**](https://orbbec3d.com/index/Product/info.html?cate=38&id=36) camera made by Orbbec as well as its [ROS1 package](https://github.com/orbbec/ros_astra_camera.git) `ros_astra_camera`.
 You will also need the `darknet_ros` [package](https://github.com/leggedrobotics/darknet_ros.git).
@@ -25,15 +25,18 @@ Notice that you need to adjust the followings in order to make it work with the 
 
  - The included `darknet_ros.launch` altered as follows : 
 
-![image](https://github.com/SkyaX/sidewalk/blob/main/images/darknet_ros_launch.png "Employee Data title")
+![image](https://github.com/SkyaX/sidewalk/blob/main/images/darknet_ros_launch.png "Darknet_ros launch file")
 
-Note : We used _yoloV7-tiny_, which does not come ready in `darknet_ros`. 
+The 6th line may be adjusted depending on the topic in which the **RGB** image from your camera is published.
 
+ - Note that we used _yoloV7-tiny_, which does not come ready with `darknet_ros`. 
 After downloading the `darknet_ros` package, you can simply add the [`yolov7.yaml`](https://github.com/SkyaX/sidewalk/blob/main/configs/yolov7.yaml) file in the `darknet_ros/config` folder.
-
 Then change the 14th line of the previously mentioned file from `yolov3.yaml` -> `yolov7.yaml`.
-
 Finally, you can add the [yolov7-tiny.weights](https://github.com/SkyaX/sidewalk/blob/main/configs/yolov7-tiny.weights) & [yolov7-tiny.cfg](https://github.com/SkyaX/sidewalk/blob/main/configs/yolov7-tiny.cfg) in the `darknet_ros/yolo_network_config/weights` & `darknet_ros/yolo_network_config/cfg` folders, respectively.
+
+## Usage
+
+
 
 
 ## Authors
