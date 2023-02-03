@@ -3,6 +3,8 @@
 [![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/60-percent-of-the-time-works-every-time.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/it-works-why.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/works-on-my-machine.svg)](https://forthebadge.com)
 
 A [**ROS**](http://wiki.ros.org/noetic) package, relying on the RGB-D camera technology, developed for a course regarding Cybathlon contest's sidewalk challenge.
 
@@ -57,6 +59,8 @@ roslaunch sidewalk pre_sidewalk.launch
 ```bash
 roslaunch sidewalk opti_sidewalk.launch
 ```
+
+<img src="images/panda_pick.gif" align="right" width="35%"/>
 
 
 ## Authors
