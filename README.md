@@ -8,7 +8,7 @@ A [**ROS**](http://wiki.ros.org/noetic) package, relying on the RGB-D camera tec
 
 Tested and reviewed under **ROS-noetic** and **Ubuntu 20.04**, this package, unaltered, depends on the use of an [**Astra Pro**](https://orbbec3d.com/index/Product/info.html?cate=38&id=36) camera made by Orbbec as well as its [ROS1 package](https://github.com/orbbec/ros_astra_camera.git) `ros_astra_camera`.
 
-![astra_pro](https://github.com/SkyaX/sidewalk/blob/main/images/Astra%20Pro%20Plus_00.png)
+![astra_pro](https://github.com/SkyaX/sidewalk/blob/main/images/Astra%20Pro%20Plus_00.png)&nbsp;
 
 You will also need the `darknet_ros` [package](https://github.com/leggedrobotics/darknet_ros.git).
 
