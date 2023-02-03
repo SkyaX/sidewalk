@@ -1,4 +1,4 @@
 <launch>
-	<node name = "SideWalker" pkg = "sidewalk" type = "trajectoire_test.py" output="screen" />
+	<node name = "SideWalker" pkg = "sidewalk" type = "trajectoire_final.py" output="screen" />
 	<node name = "SideWalker_info" pkg = "sidewalk" type = "info.py"/>
 </launch>
