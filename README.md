@@ -61,6 +61,13 @@ Here is an overview of the system's organisation :
 
 ![rqtgraph](https://github.com/SkyaX/sidewalk/blob/main/images/rosgraph.png)
 
+ - Firstly, make sure that the **Subscribers** in the file [`trajectoire_final.py`](https://github.com/SkyaX/sidewalk/blob/main/src/trajectoire_final.py) are correctly created. They should be given the correct topic depending on the package you use for your camera, as follows :
+
+ ```python
+	cam_img_sub = message_filters.Subscriber('/camera/color/image_raw', Image)
+	depth_img_sub = message_filters.Subscriber('/camera/depth/image_raw', Image)
+ ```
+
  - Start by launching the `pre_sidewalk.launch` file :
 ```bash
 roslaunch sidewalk pre_sidewalk.launch
