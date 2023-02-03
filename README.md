@@ -41,6 +41,11 @@ Notice that you need to adjust the followings in order to make it work with the 
 
  - The included `darknet_ros.launch` altered as follows : 
 
+```XML
+ 	<!-- includes darknet launch file --> 
+	<include file ="$(find darknet_ros)/launch/darknet_ros.launch"/> 
+```
+
 ![image](https://github.com/SkyaX/sidewalk/blob/main/images/darknet_ros_launch.png "Darknet_ros launch file")
 
 The 6th line may be adjusted depending on the topic in which the **RGB** image from your camera is published.

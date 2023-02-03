@@ -4,9 +4,6 @@ import rospy
 import numpy as np
 from cv_bridge import CvBridge
 import cv2
-import matplotlib.pyplot as plt
-import time
-from skimage import measure
 
 from sensor_msgs.msg import Image
 from std_msgs.msg import String
@@ -120,7 +117,7 @@ def process_RGBD(cam_image, depth_image):
 
 		cv2.imshow("Half_depth", half_yolo2); cv2.waitKey(1)
 
-	except Exception as err : print(err) # exception si pas d'image
+	except Exception as err : print(f"Err in 1st spliting\n{err}") # exception si pas d'image
 
 	try :
 		N2 = 10
@@ -156,7 +153,7 @@ def process_RGBD(cam_image, depth_image):
 
 		process_dir([Xc_moy,Yc_moy])
 
-	except Exception as err : print(f"Err : spliting\n{err}")
+	except Exception as err : print(f"Err in 2nd spliting\n{err}")
 
 	#cv2.imshow("Cam", cv_cam_image); cv2.waitKey(1)
 	#cv2.imshow("Depth", show_off); cv2.waitKey(1)
@@ -187,7 +184,7 @@ def process_dir(direction):
 
 		Traj_publisher.publish(Pose_obj)
 
-	except : print('No object', direction)
+	except Exception as err : print('No direction : \n', err)
 
 if __name__ == '__main__':
 

@@ -1,8 +1,4 @@
 <launch>
-	<!-- node name = "depth_square" pkg = "sidewalk" type = "depth_squares.py"/ -->
-	<!-- node name = "yolo_centroids" pkg = "sidewalk" type = "yolo_test2.py"/ -->
-	<node name = "yolo_trajectoire" pkg = "sidewalk" type = "trajectoire_test.py" output="screen" />
-	<node name = "info_trajet" pkg = "sidewalk" type = "info.py"/>
-	<!-- node name = "cluster_RGBD" pkg = "sidewalk" type = "clustering.py"/ -->
-	<!-- node name = "depth_slic" pkg = "sidewalk" type = "superpix.py"/ -->
+	<node name = "SideWalker" pkg = "sidewalk" type = "trajectoire_test.py" output="screen" />
+	<node name = "SideWalker_info" pkg = "sidewalk" type = "info.py"/>
 </launch>
