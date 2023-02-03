@@ -82,7 +82,8 @@ roslaunch sidewalk pre_sidewalk.launch
 roslaunch sidewalk opti_sidewalk.launch
 ```
 
-<img src="images/panda_pick.gif" align="right" width="35%"/>
+The different OpenCV outputs :
+<img src="https://github.com/SkyaX/sidewalk/blob/main/images/yolo_gif.gif" align="right" width="35%"/>
 
 
 ## Authors
