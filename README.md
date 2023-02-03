@@ -6,7 +6,9 @@
 [![forthebadge](https://forthebadge.com/images/badges/it-works-why.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/works-on-my-machine.svg)](https://forthebadge.com)
 
-A [**ROS**](http://wiki.ros.org/noetic) package, relying on the RGB-D camera technology, developed for a course regarding Cybathlon contest's sidewalk challenge.
+A [**ROS**](http://wiki.ros.org/noetic) package, relying on the RGB-D camera technology, developed for a course regarding the Cybathlon contest's sidewalk challenge.
+
+Its purpose is to identify obstacles to avoid, within a certain margin of error, and isolate the optimal direction for a visually impared person to follow.
 
 Tested and reviewed under **ROS-noetic** and **Ubuntu 20.04**, this package, unaltered, depends on the use of an [**Astra Pro**](https://orbbec3d.com/index/Product/info.html?cate=38&id=36) camera made by Orbbec as well as its [ROS1 package](https://github.com/orbbec/ros_astra_camera.git) `ros_astra_camera`.
 
