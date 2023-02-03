@@ -7,11 +7,23 @@
 A [**ROS**](http://wiki.ros.org/noetic) package, relying on the RGB-D camera technology, developed for a course regarding Cybathlon contest's sidewalk challenge.
 
 Tested and reviewed under **ROS-noetic** and **Ubuntu 20.04**, this package, unaltered, depends on the use of an [**Astra Pro**](https://orbbec3d.com/index/Product/info.html?cate=38&id=36) camera made by Orbbec as well as its [ROS1 package](https://github.com/orbbec/ros_astra_camera.git) `ros_astra_camera`.
+
+![astra_pro](https://github.com/SkyaX/sidewalk/blob/main/images/Astra%20Pro%20Plus_00.png)
+
 You will also need the `darknet_ros` [package](https://github.com/leggedrobotics/darknet_ros.git).
 
 ## Installation
 
-Make sure that the two previously mentionned dependencies are built.
+Make sure that the two previously mentionned dependencies are downloaded in your catkin workspace.
+
+ - Once everything is checked and working, clone the latest version of the repository in the `src` folder of your workspace and build the newly added packages.
+
+```bash
+cd catkin_ws/src
+git clone https://github.com/SkyaX/sidewalk.git
+cd ..
+catkin_make
+```
 
 The `pre_sidewalk.launch` file starts the launch files from the two previously mentionned packages.
 Notice that you need to adjust the followings in order to make it work with the **Astra Pro** camera as well as any other camera/package pair :
@@ -36,7 +48,15 @@ Finally, you can add the [yolov7-tiny.weights](https://github.com/SkyaX/sidewalk
 
 ## Usage
 
+ - Start by launching the `pre_sidewalk.launch` file :
+```bash
+roslaunch sidewalk pre_sidewalk.launch
+```
 
+ - You can then launch the main file :
+```bash
+roslaunch sidewalk opti_sidewalk.launch
+```
 
 
 ## Authors
