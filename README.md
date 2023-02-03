@@ -43,7 +43,7 @@ Notice that you need to adjust the followings in order to make it work with the 
 
 ```XML
  	<!-- includes darknet launch file --> 
-	<include file ="$(find darknet_ros)/launch/darknet_ros.launch"/> 
+	<include file = "$(find darknet_ros)/launch/darknet_ros.launch"/> 
 ```
 
 ![image](https://github.com/SkyaX/sidewalk/blob/main/images/darknet_ros_launch.png "Darknet_ros launch file")
