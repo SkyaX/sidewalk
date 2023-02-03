@@ -50,6 +50,10 @@ Finally, you can add the [yolov7-tiny.weights](https://github.com/SkyaX/sidewalk
 
 ## Usage
 
+Here is an overview of the system's organisation :
+
+![rqtgraph](https://github.com/SkyaX/sidewalk/blob/main/images/rosgraph.png)
+
  - Start by launching the `pre_sidewalk.launch` file :
 ```bash
 roslaunch sidewalk pre_sidewalk.launch
