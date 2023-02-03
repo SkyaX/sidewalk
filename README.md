@@ -1,4 +1,4 @@
-# SideWalker
+# SideWalker ![logo](https://github.com/SkyaX/sidewalk/blob/main/images/logo.png)
 
 [![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/60-percent-of-the-time-works-every-time.svg)](https://forthebadge.com)
@@ -83,7 +83,9 @@ roslaunch sidewalk opti_sidewalk.launch
 ```
 
 The different OpenCV outputs :
-<img src="https://github.com/SkyaX/sidewalk/blob/main/images/yolo_gif.gif" align="right" width="35%"/>
+
+![yolo_gif](https://github.com/SkyaX/sidewalk/blob/main/images/yolo_gif.gif)
+
 
 
 ## Authors
