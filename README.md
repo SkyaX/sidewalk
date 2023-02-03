@@ -68,6 +68,10 @@ Here is an overview of the system's organisation :
 	depth_img_sub = message_filters.Subscriber('/camera/depth/image_raw', Image)
  ```
 
+ The library `message_filters` is used to assure the correct synchronization between the depth and RGB images.
+
+### Launch
+
  - Start by launching the `pre_sidewalk.launch` file :
 ```bash
 roslaunch sidewalk pre_sidewalk.launch
