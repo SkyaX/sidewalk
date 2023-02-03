@@ -113,9 +113,9 @@ def process_RGBD(cam_image, depth_image):
 		else : print('Center')
 		half_yolo = yolo_means_rgb.copy()
 		half_yolo = half_yolo[:,highest_mean*640//N1:640//N1*(highest_mean+1)]
-		half_yolo2 = cv_dep_image[:,highest_mean*640//N1:640//N1*(highest_mean+1)]
+		half_yolo2 = cv_dep_dilat_norm[:,highest_mean*640//N1:640//N1*(highest_mean+1)]
 
-		cv2.imshow("Half_depth", half_yolo2); cv2.waitKey(1)
+		cv2.imshow("Hightest_median", half_yolo2); cv2.waitKey(1)
 
 	except Exception as err : print(f"Err in 1st spliting\n{err}") # exception si pas d'image
 
