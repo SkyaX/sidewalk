@@ -84,7 +84,10 @@ roslaunch sidewalk opti_sidewalk.launch
 
 The different OpenCV outputs :
 
+
 ![yolo_gif](https://github.com/SkyaX/sidewalk/blob/main/images/yolo_gif.gif)
+![blurred](https://github.com/SkyaX/sidewalk/blob/main/images/true_blurred.jpeg)
+![final](https://github.com/SkyaX/sidewalk/blob/main/images/result.png)
 
 
 
